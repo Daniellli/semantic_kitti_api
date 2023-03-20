@@ -160,12 +160,12 @@ if __name__ == '__main__':
   #     epoch = int(epoch_string)
   # else:
   #     epoch = None
+
   epoch = None
   if FLAGS.prediction_source_folder is not None:
     writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + FLAGS.prediction_source_folder[:FLAGS.prediction_source_folder.rfind('/')])
   else:
     writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + 'demo')
-
 
 
   # create evaluator

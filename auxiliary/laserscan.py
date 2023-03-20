@@ -328,6 +328,16 @@ class SemLaserScan(LaserScan):
             self.sem_color_lut[100] = [0 / 255, 0 / 255, 255 / 255]
             self.sem_color_lut[101] = [255 / 255, 0 / 255, 0 / 255]
 
+        # find out other-vehicles
+        if False:
+            self.sem_color_lut = self.sem_color_lut * 0
+            self.sem_color_lut[13] = [0 / 255, 0 / 255, 255 / 255]
+            self.sem_color_lut[16] = [255 / 255, 0 / 255, 0 / 255]
+            self.sem_color_lut[20] = [0 / 255, 255 / 255, 0 / 255]
+            self.sem_color_lut[256] = [255 / 255, 0 / 255, 0 / 255]
+            self.sem_color_lut[257] = [255 / 255, 0 / 255, 0 / 255]
+            self.sem_color_lut[259] = [255 / 255, 0 / 255, 0 / 255]
+
         self.sem_label_color = self.sem_color_lut[self.sem_label]
         self.sem_label_color = self.sem_label_color.reshape((-1, 3))
 
