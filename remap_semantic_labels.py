@@ -72,6 +72,8 @@ if __name__ == '__main__':
 
   # check name
   root_directory = ""
+  #? what does the label_directory mean ?
+  # ? why does it save in the directory same as  the prediction 
   label_directory = ""
   if(FLAGS.dataset is not None):
     root_directory = FLAGS.dataset
@@ -147,3 +149,5 @@ if __name__ == '__main__':
     label = (upper_half << 16) + lower_half   # reconstruct full label
     label = label.astype(np.uint32)
     label.tofile(label_file)
+
+  print("remap done ")

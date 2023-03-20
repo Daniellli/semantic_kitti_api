@@ -155,12 +155,18 @@ if __name__ == '__main__':
       print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
 
   # tensorboard writer
-  epoch_string = FLAGS.prediction_source_folder[FLAGS.prediction_source_folder.rfind('epoch_')+6:]
-  if len(epoch_string) > 0:
-      epoch = int(epoch_string)
+  # epoch_string = FLAGS.prediction_source_folder[FLAGS.prediction_source_folder.rfind('epoch_')+6:]
+  # if len(epoch_string) > 0:
+  #     epoch = int(epoch_string)
+  # else:
+  #     epoch = None
+
+  epoch = None
+  if FLAGS.prediction_source_folder is not None:
+    writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + FLAGS.prediction_source_folder[:FLAGS.prediction_source_folder.rfind('/')])
   else:
-      epoch = None
-  writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + FLAGS.prediction_source_folder[:FLAGS.prediction_source_folder.rfind('/')])
+    writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + 'demo')
+
 
   # create evaluator
   if FLAGS.backend == "torch":

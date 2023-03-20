@@ -103,11 +103,12 @@ class iouEval:
     aupr_score = auc(recall, precision)
     print('AUPR is: ', aupr_score)
     import matplotlib.pyplot as plt
-    plt.plot(recall, precision)
-    plt.xlabel("recall")
-    plt.ylabel("precision")
-    plt.title("AUPR: " + str(aupr_score))
-    plt.show()
+
+    # plt.plot(recall, precision)
+    # plt.xlabel("recall")
+    # plt.ylabel("precision")
+    # plt.title("AUPR: " + str(aupr_score))
+    # plt.show()
 
     fpr, tpr, _ = roc_curve(self.unknown_labels, self.unknown_scores)
     plt.plot(fpr, tpr)
@@ -115,6 +116,7 @@ class iouEval:
     plt.ylabel("tpr")
     plt.title("AUROC: " + str(auc(fpr, tpr)))
     plt.show()
+
     auroc_score_1 = auc(fpr, tpr)
     # auroc_score_2 = roc_auc_score(self.unknown_labels, self.unknown_scores)
     print('AUROC is: ', auroc_score_1)
