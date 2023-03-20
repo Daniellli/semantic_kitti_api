@@ -1,0 +1,466 @@
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.05809234354681505
+AUROC is:  0.6971606403645717
+FPR95 is:  0.8314095603246336
+Validation set:
+Acc avg 0.893
+IoU avg 0.577
+IoU class 1 [car] = 0.917
+IoU class 2 [bicycle] = 0.472
+IoU class 3 [motorcycle] = 0.659
+IoU class 4 [truck] = 0.677
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.681
+IoU class 7 [bicyclist] = 0.863
+IoU class 8 [motorcyclist] = 0.001
+IoU class 9 [road] = 0.940
+IoU class 10 [parking] = 0.416
+IoU class 11 [sidewalk] = 0.800
+IoU class 12 [other-ground] = 0.010
+IoU class 13 [building] = 0.862
+IoU class 14 [fence] = 0.388
+IoU class 15 [vegetation] = 0.859
+IoU class 16 [trunk] = 0.630
+IoU class 17 [terrain] = 0.718
+IoU class 18 [pole] = 0.581
+IoU class 19 [traffic-sign] = 0.490
+********************************************************************************
+below can be copied straight for paper table
+0.917,0.472,0.659,0.677,0.000,0.681,0.863,0.001,0.940,0.416,0.800,0.010,0.862,0.388,0.859,0.630,0.718,0.581,0.490,0.577,0.893
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.11751834189757362
+AUROC is:  0.8384436232741406
+FPR95 is:  0.7472281391492654
+Validation set:
+Acc avg 0.849
+IoU avg 0.315
+IoU class 1 [car] = 0.849
+IoU class 2 [bicycle] = 0.000
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.000
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.000
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.866
+IoU class 10 [parking] = 0.024
+IoU class 11 [sidewalk] = 0.682
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.785
+IoU class 14 [fence] = 0.340
+IoU class 15 [vegetation] = 0.819
+IoU class 16 [trunk] = 0.403
+IoU class 17 [terrain] = 0.667
+IoU class 18 [pole] = 0.358
+IoU class 19 [traffic-sign] = 0.185
+********************************************************************************
+below can be copied straight for paper table
+0.849,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.866,0.024,0.682,0.000,0.785,0.340,0.819,0.403,0.667,0.358,0.185,0.315,0.849
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.04015723676397999
+AUROC is:  0.6618759838206508
+FPR95 is:  0.771458103167444
+Validation set:
+Acc avg 0.833
+IoU avg 0.317
+IoU class 1 [car] = 0.874
+IoU class 2 [bicycle] = 0.000
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.000
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.000
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.873
+IoU class 10 [parking] = 0.010
+IoU class 11 [sidewalk] = 0.533
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.803
+IoU class 14 [fence] = 0.430
+IoU class 15 [vegetation] = 0.830
+IoU class 16 [trunk] = 0.348
+IoU class 17 [terrain] = 0.574
+IoU class 18 [pole] = 0.455
+IoU class 19 [traffic-sign] = 0.303
+********************************************************************************
+below can be copied straight for paper table
+0.874,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.873,0.010,0.533,0.000,0.803,0.430,0.830,0.348,0.574,0.455,0.303,0.317,0.833
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.05049353852658684
+AUROC is:  0.698852546026779
+FPR95 is:  0.7568243810149022
+Validation set:
+Acc avg 0.856
+IoU avg 0.334
+IoU class 1 [car] = 0.831
+IoU class 2 [bicycle] = 0.000
+IoU class 3 [motorcycle] = 0.039
+IoU class 4 [truck] = 0.000
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.001
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.907
+IoU class 10 [parking] = 0.006
+IoU class 11 [sidewalk] = 0.670
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.829
+IoU class 14 [fence] = 0.371
+IoU class 15 [vegetation] = 0.844
+IoU class 16 [trunk] = 0.530
+IoU class 17 [terrain] = 0.647
+IoU class 18 [pole] = 0.476
+IoU class 19 [traffic-sign] = 0.193
+********************************************************************************
+below can be copied straight for paper table
+0.831,0.000,0.039,0.000,0.000,0.001,0.000,0.000,0.907,0.006,0.670,0.000,0.829,0.371,0.844,0.530,0.647,0.476,0.193,0.334,0.856
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.0434471711536825
+AUROC is:  0.6785696115029551
+FPR95 is:  0.8644542123833507
+Validation set:
+Acc avg 0.844
+IoU avg 0.336
+IoU class 1 [car] = 0.878
+IoU class 2 [bicycle] = 0.002
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.041
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.000
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.857
+IoU class 10 [parking] = 0.041
+IoU class 11 [sidewalk] = 0.635
+IoU class 12 [other-ground] = 0.008
+IoU class 13 [building] = 0.809
+IoU class 14 [fence] = 0.351
+IoU class 15 [vegetation] = 0.834
+IoU class 16 [trunk] = 0.526
+IoU class 17 [terrain] = 0.656
+IoU class 18 [pole] = 0.500
+IoU class 19 [traffic-sign] = 0.251
+********************************************************************************
+below can be copied straight for paper table
+0.878,0.002,0.000,0.041,0.000,0.000,0.000,0.000,0.857,0.041,0.635,0.008,0.809,0.351,0.834,0.526,0.656,0.500,0.251,0.336,0.844
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.038913004705252344
+AUROC is:  0.6103054042316657
+FPR95 is:  0.8198753557834788
+Validation set:
+Acc avg 0.865
+IoU avg 0.321
+IoU class 1 [car] = 0.879
+IoU class 2 [bicycle] = 0.000
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.000
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.002
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.904
+IoU class 10 [parking] = 0.055
+IoU class 11 [sidewalk] = 0.717
+IoU class 12 [other-ground] = 0.001
+IoU class 13 [building] = 0.843
+IoU class 14 [fence] = 0.373
+IoU class 15 [vegetation] = 0.844
+IoU class 16 [trunk] = 0.273
+IoU class 17 [terrain] = 0.699
+IoU class 18 [pole] = 0.488
+IoU class 19 [traffic-sign] = 0.020
+********************************************************************************
+below can be copied straight for paper table
+0.879,0.000,0.000,0.000,0.000,0.002,0.000,0.000,0.904,0.055,0.717,0.001,0.843,0.373,0.844,0.273,0.699,0.488,0.020,0.321,0.865
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.05714525043594566
+AUROC is:  0.6898279863466112
+FPR95 is:  0.9006376267501445
+Validation set:
+Acc avg 0.871
+IoU avg 0.351
+IoU class 1 [car] = 0.865
+IoU class 2 [bicycle] = 0.000
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.002
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.013
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.905
+IoU class 10 [parking] = 0.027
+IoU class 11 [sidewalk] = 0.709
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.841
+IoU class 14 [fence] = 0.390
+IoU class 15 [vegetation] = 0.861
+IoU class 16 [trunk] = 0.546
+IoU class 17 [terrain] = 0.714
+IoU class 18 [pole] = 0.535
+IoU class 19 [traffic-sign] = 0.253
+********************************************************************************
+below can be copied straight for paper table
+0.865,0.000,0.000,0.002,0.000,0.013,0.000,0.000,0.905,0.027,0.709,0.000,0.841,0.390,0.861,0.546,0.714,0.535,0.253,0.351,0.871
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.03951931319274627
+AUROC is:  0.5838330837265974
+FPR95 is:  0.8848034084197144
+Validation set:
+Acc avg 0.837
+IoU avg 0.352
+IoU class 1 [car] = 0.879
+IoU class 2 [bicycle] = 0.006
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.000
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.000
+IoU class 7 [bicyclist] = 0.036
+IoU class 8 [motorcyclist] = 0.000
+IoU class 9 [road] = 0.884
+IoU class 10 [parking] = 0.134
+IoU class 11 [sidewalk] = 0.523
+IoU class 12 [other-ground] = 0.012
+IoU class 13 [building] = 0.865
+IoU class 14 [fence] = 0.366
+IoU class 15 [vegetation] = 0.853
+IoU class 16 [trunk] = 0.578
+IoU class 17 [terrain] = 0.709
+IoU class 18 [pole] = 0.536
+IoU class 19 [traffic-sign] = 0.298
+********************************************************************************
+below can be copied straight for paper table
+0.879,0.006,0.000,0.000,0.000,0.000,0.036,0.000,0.884,0.134,0.523,0.012,0.865,0.366,0.853,0.578,0.709,0.536,0.298,0.352,0.837
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.06674770617698587
+AUROC is:  0.7850102646999019
+FPR95 is:  0.5432562989418778
+Validation set:
+Acc avg 0.860
+IoU avg 0.322
+IoU class 1 [car] = 0.877
+IoU class 2 [bicycle] = 0.002
+IoU class 3 [motorcycle] = 0.012
+IoU class 4 [truck] = 0.001
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.006
+IoU class 7 [bicyclist] = 0.000
+IoU class 8 [motorcyclist] = 0.001
+IoU class 9 [road] = 0.905
+IoU class 10 [parking] = 0.090
+IoU class 11 [sidewalk] = 0.714
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.837
+IoU class 14 [fence] = 0.188
+IoU class 15 [vegetation] = 0.805
+IoU class 16 [trunk] = 0.430
+IoU class 17 [terrain] = 0.708
+IoU class 18 [pole] = 0.299
+IoU class 19 [traffic-sign] = 0.252
+********************************************************************************
+below can be copied straight for paper table
+0.877,0.002,0.012,0.001,0.000,0.006,0.000,0.001,0.905,0.090,0.714,0.000,0.837,0.188,0.805,0.430,0.708,0.299,0.252,0.322,0.860
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  4071
+Evaluating sequences: 10% 20% 30% 40% 50% 60% 70% 80% 90% Save scores distribution successfully!
+AUPR is:  0.08251020223741287
+AUROC is:  0.7845172392233402
+FPR95 is:  0.7594574761542318
+Validation set:
+Acc avg 0.859
+IoU avg 0.347
+IoU class 1 [car] = 0.879
+IoU class 2 [bicycle] = 0.015
+IoU class 3 [motorcycle] = 0.000
+IoU class 4 [truck] = 0.002
+IoU class 5 [other-vehicle] = 0.000
+IoU class 6 [person] = 0.039
+IoU class 7 [bicyclist] = 0.038
+IoU class 8 [motorcyclist] = 0.001
+IoU class 9 [road] = 0.909
+IoU class 10 [parking] = 0.085
+IoU class 11 [sidewalk] = 0.702
+IoU class 12 [other-ground] = 0.000
+IoU class 13 [building] = 0.804
+IoU class 14 [fence] = 0.409
+IoU class 15 [vegetation] = 0.833
+IoU class 16 [trunk] = 0.426
+IoU class 17 [terrain] = 0.630
+IoU class 18 [pole] = 0.526
+IoU class 19 [traffic-sign] = 0.299
+********************************************************************************
+below can be copied straight for paper table
+0.879,0.015,0.000,0.002,0.000,0.039,0.038,0.001,0.909,0.085,0.702,0.000,0.804,0.409,0.833,0.426,0.630,0.526,0.299,0.347,0.859
+********************************************************************************
+INTERFACE:
+Data:  ../semantic_kitti/dataset
+Predictions:  ../semantic_kitti/predictions
+Backend:  numpy
+Split:  valid
+Config:  config/semantic-kitti.yaml
+Limit:  None
+Codalab:  None
+********************************************************************************
+Opening data config file config/semantic-kitti.yaml
+Ignoring xentropy class  0  in IoU evaluation
+[IOU EVAL] IGNORE:  [0]
+[IOU EVAL] INCLUDE:  [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]
+labels:  4071
+predictions:  0
