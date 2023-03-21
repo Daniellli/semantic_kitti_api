@@ -5,11 +5,12 @@ import argparse
 import os
 import yaml
 import numpy as np
-
+from tqdm import tqdm
 # possible splits
 splits = ["train", "valid", "test"]
 
-if __name__ == '__main__':
+
+def parse_args():
   parser = argparse.ArgumentParser("./remap_semantic_labels.py")
   parser.add_argument(
       '--dataset', '-d',
@@ -57,6 +58,16 @@ if __name__ == '__main__':
   )
   FLAGS, unparsed = parser.parse_known_args()
 
+  return FLAGS, unparsed
+   
+
+
+
+
+if __name__ == '__main__':
+  FLAGS, unparsed = parse_args()
+  
+
   # print summary of what we will do
   # print("*" * 80)
   # print("INTERFACE:")
@@ -80,8 +91,10 @@ if __name__ == '__main__':
     label_directory = "labels"
   elif(FLAGS.predictions is not None):
     root_directory = FLAGS.predictions
-    label_directory = "predictions_2dummy_1_01_final_cross_latest"
-    # Override label_directory (the folder for point predict) if FLAGS.label_folder is valid
+    # label_directory = "predictions_2dummy_1_01_final_cross_latest"
+    # Override label_directory (the folder for oint predict) if FLAGS.label_folder is valid
+    label_directory = "point_predict"
+  
     if FLAGS.label_folder is not None:
         label_directory = FLAGS.label_folder
   else:
@@ -118,8 +131,15 @@ if __name__ == '__main__':
   label_names = []
   for sequence in sequence:
     sequence = '{0:02d}'.format(int(sequence))
-    label_paths = os.path.join(root_directory, "sequences",
-                               sequence, label_directory)
+    #!+==================================================================
+    # label_paths = os.path.join(root_directory, "sequences",
+    #                            sequence, label_directory)
+    
+    label_paths = os.path.join(root_directory, label_directory)
+    
+
+    #!+==================================================================
+
     # populate the label names
     seq_label_names = [os.path.join(dp, f) for dp, dn, fn in os.walk(
         os.path.expanduser(label_paths)) for f in fn if ".label" in f]
@@ -127,12 +147,13 @@ if __name__ == '__main__':
     label_names.extend(seq_label_names)
   # print(label_names)
 
-  # open each file, get the tensor, and remap only the lower half (semantics)
-  for label_file in label_names:
+  # open each file, get the tensor, and remap only the lower half (semantics), 
+  for label_file in tqdm(label_names):
     # open label
     #print(label_file)
     label = np.fromfile(label_file, dtype=np.uint32)
     label = label.reshape((-1))
+
     upper_half = label >> 16      # get upper half for instances
     lower_half = label & 0xFFFF   # get lower half for semantics
     if lower_half.max() > 19:
