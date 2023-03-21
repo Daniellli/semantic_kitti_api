@@ -10,13 +10,15 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.tensorboard import SummaryWriter
 
+from os.path import join, split,split, exists, isdir, isfile
 # possible splits
 splits = ["train", "valid", "test"]
-
+import time
 # possible backends
 backends = ["numpy", "torch"]
+import json
 
-if __name__ == '__main__':
+def parse_args():
   parser = argparse.ArgumentParser("./evaluate_semantics.py")
   parser.add_argument(
       '--dataset', '-d',
@@ -106,6 +108,14 @@ if __name__ == '__main__':
 
   FLAGS, unparsed = parser.parse_known_args()
 
+  return FLAGS, unparsed
+
+
+
+if __name__ == '__main__':
+  FLAGS, unparsed = parse_args()
+  
+  tic = time.time()
   # fill in real predictions dir
   if FLAGS.predictions is None:
     FLAGS.predictions = FLAGS.dataset
@@ -168,7 +178,7 @@ if __name__ == '__main__':
     writer = SummaryWriter(FLAGS.tensorboard_runs_dir + '/' + 'demo')
 
 
-  # create evaluator
+  # create evaluator #* only numpy available 
   if FLAGS.backend == "torch":
     from auxiliary.torch_ioueval import iouEval
     evaluator = iouEval(nr_classes, ignore)
@@ -197,25 +207,28 @@ if __name__ == '__main__':
   # print(label_names)
 
   # get predictions paths
-  pred_names = []
+  pred_names = []#* why define it at here
   for sequence in test_sequences:
     sequence = '{0:02d}'.format(int(sequence))
+    
     if FLAGS.prediction_source_folder is None:
         point_predict_folder = "predictions_2dummy_1_01_final_cross_latest"
         uncertainty_predict_folder = "scores_softmax_2dummy_1_01_final_latest"
+        
     else:
         point_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.point_predict_folder_name
         uncertainty_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.uncertainty_folder_name
+
     pred_paths = os.path.join(FLAGS.predictions, "sequences",
                               sequence, point_predict_folder)
-    # populate the label names
+    #* populate/add the label names
     seq_pred_names = [os.path.join(dp, f) for dp, dn, fn in os.walk(
         os.path.expanduser(pred_paths)) for f in fn if ".label" in f]
     seq_pred_names.sort()
     pred_names.extend(seq_pred_names)
   # print(pred_names)
 
-    # get uncertainty scores paths
+    #* get uncertainty scores paths
     scores_names = []
     for sequence in test_sequences:
         sequence = '{0:02d}'.format(int(sequence))
@@ -251,7 +264,7 @@ if __name__ == '__main__':
     label = label & 0xFFFF       # get lower half for semantics
     if FLAGS.limit is not None:
       label = label[:FLAGS.limit]  # limit to desired length
-    valid_index = label != 0
+    valid_index = label != 0 #* 0 is the unlabeled object 
     label = remap_lut[label]       # remap to xentropy format
     label = label[valid_index]
 
@@ -272,12 +285,21 @@ if __name__ == '__main__':
 
     # add single scan to evaluation
     evaluator.addBatch(pred, label, scores)
+    # evaluator.addBatch(torch.from_numpy(pred), torch.from_numpy(label), torch.from_numpy(scores))
 
   # when I am done, print the evaluation
   m_accuracy = evaluator.getacc()
   m_jaccard, class_jaccard = evaluator.getIoU()
   # print(evaluator.conf_matrix)
-  evaluator.get_unknown_indices()
+  
+  
+  eval_res = evaluator.get_unknown_indices() #* take long time
+  
+
+  with open(join(pred_paths,'..','anomaly_res.json'),'w') as f :
+    json.dump(eval_res,f)
+    
+  
 
   print('Validation set:\n'
         'Acc avg {m_accuracy:.3f}\n'
@@ -314,3 +336,5 @@ if __name__ == '__main__':
     output_filename = os.path.join(FLAGS.codalab, 'scores.txt')
     with open(output_filename, 'w') as yaml_file:
       yaml.dump(results, yaml_file, default_flow_style=False)
+
+  print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))

@@ -1,0 +1,91 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation as R
+from astropy import coordinates as ac
+import copy
+import torch
+
+import os 
+from os.path import join, split,exists, isdir,isfile
+
+# file_root =  join(os.getcwd(),'..')
+# os.chdir(file_root)
+import sys
+
+sys.path.append(os.getcwd())
+
+from utils.pc_utils import *
+from utils import * 
+
+
+from utils.utils import * 
+import numpy as np 
+
+
+
+
+
+class PredictionLoader:
+    def __init__(self,root):
+        self.root = root
+        
+        self.pc_pred_path = join(root,'point_predict')
+        self.pc_pred_list = sorted(os.listdir(self.pc_pred_path))
+
+        self.uncertainty_path = join(root,'uncertainty')
+        self.uncertainty_list = sorted(os.listdir(self.uncertainty_path))
+
+        self.name_list = [x.split('.')[0] for x in self.uncertainty_list]
+
+        assert len(self.uncertainty_list) == len(self.pc_pred_list )
+
+    def __len__(self):
+        return len(self.uncertainty_list)
+    
+    
+    def name2idx(self,name):
+        return self.name_list.index(name)
+    
+    def idx2name(self,idx):
+        return self.name_list[idx]
+
+    def __getitem__(self,idx):
+
+
+        return np.fromfile(join(self.pc_pred_path,self.pc_pred_list[idx]), dtype=np.uint32),\
+             np.fromfile(join(self.uncertainty_path,self.uncertainty_list[idx]), dtype=np.float32)
+        
+        
+    def is_mapped(self):
+        pc_pred ,uncertainty= self.__getitem__(0)
+        
+        # print(np.unique(pc_pred),len(np.unique(pc_pred)))
+        
+        return pc_pred.max() >19
+        
+    def tmp(self):
+        pc_pred ,uncertainty= self.__getitem__(0)
+        print(np.unique(pc_pred),len(np.unique(pc_pred)))
+
+    
+
+if __name__ == "__main__":
+
+
+    prediction_root = '/data1/liyang/semantic_kitti_api-master/datasets/predictions/sequences/08/n19_four_losses_with_shapenet_anomaly'
+
+
+    epoch_names= sorted(os.listdir(prediction_root),key=lambda k: int(k.split('_')[-1]))
+
+    for epoch_name in epoch_names:
+        loader = PredictionLoader(join(prediction_root,epoch_name))
+        if loader.is_mapped():
+            print(epoch_name,'is mapped ')
+        else :
+            print(epoch_name,'is not  mapped ')
+
+
+    
+
+

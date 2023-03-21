@@ -99,7 +99,7 @@ class iouEval:
 
     from sklearn.metrics import precision_recall_curve, auc, roc_curve, roc_auc_score
 
-    precision, recall, _ = precision_recall_curve(self.unknown_labels, self.unknown_scores)
+    precision, recall, _ = precision_recall_curve(self.unknown_labels, self.unknown_scores)#* take long time
     aupr_score = auc(recall, precision)
     print('AUPR is: ', aupr_score)
     import matplotlib.pyplot as plt
@@ -116,19 +116,29 @@ class iouEval:
     plt.ylabel("tpr")
     plt.title("AUROC: " + str(auc(fpr, tpr)))
     plt.show()
+    # plt.savefig('logs/tmp.jpg')
 
     auroc_score_1 = auc(fpr, tpr)
     # auroc_score_2 = roc_auc_score(self.unknown_labels, self.unknown_scores)
     print('AUROC is: ', auroc_score_1)
-
     print('FPR95 is: ', fpr[tpr > 0.95][0])
+    
 
+    #!+===================================
+    accumulated_res  = {
+      "OOD/AUPR":aupr_score,
+      "OOD/AUROC":auroc_score_1,
+      "OOD/FPR95":fpr[tpr > 0.95][0],
+      "epoch":self.epoch,
+    }
+    #!+===================================
 
     if self.writer is not None and self.epoch is not None:
       self.writer.add_scalar('OOD/AUPR', aupr_score, self.epoch)
       self.writer.add_scalar('OOD/AUROC', auroc_score_1, self.epoch)
       self.writer.add_scalar('OOD/FPR95', fpr[tpr > 0.95][0], self.epoch)
 
+    return accumulated_res
 
 
 

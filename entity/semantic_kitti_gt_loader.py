@@ -90,8 +90,17 @@ class SementicKittiGtLoader:
     
 
     def get_label(self,idx):
+         
         print(self.labels[idx])
-        return np.fromfile(join(self.label_path,self.labels[idx]), dtype=np.uint32)
+        label = np.fromfile(join(self.label_path,self.labels[idx]), dtype=np.uint32)
+
+        sem_label = label & 0xFFFF  # semantic label in lower half
+        inst_label = label >> 16  # instance id in upper half
+        # print(np.unique(sem_label, return_counts=True))
+        # print(np.unique(inst_label, return_counts=True))
+
+
+        return sem_label,inst_label
     
     def idx2name(self,idx):
 
