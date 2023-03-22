@@ -365,6 +365,7 @@ if __name__ == '__main__':
   assert(FLAGS.split in splits)
   
   if FLAGS.predictions_root is not None :
+    #! error happen when so much model in FLAGS.predictions_root
     prediction_list = []
     for model_name in os.listdir(FLAGS.predictions_root):
       prediction_path = join(FLAGS.predictions_root,model_name)
@@ -372,9 +373,8 @@ if __name__ == '__main__':
         prediction_list.append(prediction_path)
     logger.info(f"ready to eval {len(prediction_list)} model")
 
-    evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list[4:10],FLAGS.datacfg,split=FLAGS.split)
+    evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list,FLAGS.datacfg,split=FLAGS.split)
     logger.info("start evaluating ")
-    # evaluator()
     evaluator(128)
   else:
     evaluator = SementicEvaluator(FLAGS.dataset,FLAGS.predictions,FLAGS.datacfg,split=FLAGS.split)
