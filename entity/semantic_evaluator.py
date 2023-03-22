@@ -373,7 +373,7 @@ if __name__ == '__main__':
       prediction_path = join(FLAGS.predictions_root,model_name)
       if exists(prediction_path):
         prediction_list.append(prediction_path)
-    logger.info(f"ready to eval {len(prediction_path)} model")
+    logger.info(f"ready to eval {len(prediction_list)} model")
 
     evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list,FLAGS.datacfg,split=FLAGS.split)
     logger.info("start evaluating ")
