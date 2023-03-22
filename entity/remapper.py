@@ -18,6 +18,8 @@ import time
 
 
 
+from entity.semantic_kitti_gt_loader import SementicKittiGtLoader 
+
 
 def parse_args():
   parser = argparse.ArgumentParser("./remap_semantic_labels.py")
@@ -73,21 +75,23 @@ class ReMapper:
   description:  remap prediction label range to be consistency with gt label range 
   param {*} self
   param {*} args
-    args.predictions: : the prediction result path
+    prediction: : the prediction result path
     args.datacfg : the data config file path
     args.inverse : is map from gt label range to prediction label range or reverse 
-    args.split: map with subset
+    split: map with subset
   return {*}
   '''  
-  def __init__(self, args):
-    self.args= args
-
-    # assert((args.dataset is not None) != (args.predictions is not None))
-    assert args.predictions is not None
+  def __init__(self,prediction,datacfg='config/semantic-kitti.yaml',
+                inverse=False,split='valid'):
+    
+    self.split = split
+    self.inverse = inverse
+    self.datacfg = datacfg
+    assert prediction is not None
 
     
     #* assume: if(FLAGS.predictions is not None) is always right 
-    self.prediction_root = FLAGS.predictions
+    self.prediction_root = prediction
     self.label_dir_name = "point_predict" #* the directory which  all label file in it need to remap 
     
 
@@ -99,14 +103,16 @@ class ReMapper:
     
     #* remap precition one by one 
 
+    self.gt_loader = SementicKittiGtLoader('datasets/dataset')
+
 
   def get_map_dict(self):
     # assert split
-    assert(self.args.split in splits)
-    DATA = yaml.safe_load(open(self.args.datacfg, 'r'))
+    assert(self.split in splits)
+    DATA = yaml.safe_load(open(self.datacfg, 'r'))
 
     # get number of interest classes, and the label mappings
-    if self.args.inverse:
+    if self.inverse:
       # print("Mapping xentropy to original labels")
       remapdict = DATA["learning_map_inv"]
     else:
@@ -123,7 +129,7 @@ class ReMapper:
     # get wanted set
     #* get sequence by split, there are 3 split: test, train, valid
     sequence = []
-    sequence.extend(DATA["split"][FLAGS.split])
+    sequence.extend(DATA["split"][self.split])
 
     self.sequence = sequence
 
@@ -157,15 +163,11 @@ class ReMapper:
       lower_half = label & 0xFFFF   # get lower half for semantics
 
       if lower_half.max() > 19:
-          print()
-          print('It has already been mapped. Skip everything in this folder. ')
-          print()
+          print('\n \n It has already been mapped. Skip everything in this folder. ')
           return 
 
       if (lower_half == 0).all():
-          print()
-          print('It has already been mapped more than once. Skip everything in this folder. ')
-          print()
+          print('\n \n It has already been mapped more than once. Skip everything in this folder. ')
           return 
 
       lower_half = self.remap_lut[lower_half]  # do the remapping of semantics
@@ -175,6 +177,12 @@ class ReMapper:
 
   def __call__(self,threads=128):
     tic = time.time()
+
+    if self.__len__() != self.gt_loader.__len__() :
+      print(" inference process  is uncomplete, please inference again")
+      return 
+    
+
     process_mp(self.remap,list(range(self.__len__())),threads)
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
     print("remap done ")
@@ -183,8 +191,9 @@ class ReMapper:
 
 if __name__ == '__main__':
   FLAGS, unparsed = parse_args()
-  remapper = ReMapper(FLAGS)
-  remapper()
 
-
-
+  remapper = ReMapper(FLAGS.predictions,
+                      FLAGS.datacfg,
+                      inverse=FLAGS.inverse,
+                      split=FLAGS.split)
+  remapper(256)

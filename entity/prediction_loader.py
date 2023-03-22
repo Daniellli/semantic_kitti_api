@@ -1,3 +1,12 @@
+'''
+Author: daniel
+Date: 2023-03-21 20:54:42
+LastEditTime: 2023-03-22 12:29:10
+LastEditors: daniel
+Description: 
+FilePath: /semantic_kitti_api-master/entity/prediction_loader.py
+have a nice day
+'''
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,16 +33,54 @@ import numpy as np
 
 
 
+class MultiPredictionLoader:
+
+    def __init__(self,model_predition_path,sequence_list) :
+
+        loader_list = []
+        for sequence in sequence_list:
+            loader_list.append(PredictionLoader(model_predition_path,sequence))
+        self.loader_list = loader_list
+
+        
+        accumulated_precition = []
+        
+        for loader in self.loader_list:
+            accumulated_precition += loader.get_prediction_list()
+
+
+
+        self.accumulated_precition = accumulated_precition
+
+
+    def is_mapped(self):
+        
+        return self.loader_list[0].is_mapped()
+        
+    def __len__(self):
+        return len(self.accumulated_precition)
+    
+    def __getitem__(self,idx):
+        
+        return self.accumulated_precition[idx]
+        
+
+
+
+        
+    
+
 
 
 class PredictionLoader:
-    def __init__(self,root):
-        self.root = root
+    def __init__(self,model_predition_path,sequence='08'):
         
-        self.pc_pred_path = join(root,'point_predict')
+        self.root = join(model_predition_path,'sequences',sequence)
+        
+        self.pc_pred_path = join(self.root,'point_predict')
         self.pc_pred_list = sorted(os.listdir(self.pc_pred_path))
 
-        self.uncertainty_path = join(root,'uncertainty')
+        self.uncertainty_path = join(self.root,'uncertainty')
         self.uncertainty_list = sorted(os.listdir(self.uncertainty_path))
 
         self.name_list = [x.split('.')[0] for x in self.uncertainty_list]
@@ -44,29 +91,59 @@ class PredictionLoader:
         return len(self.uncertainty_list)
     
     
+
     def name2idx(self,name):
         return self.name_list.index(name)
     
     def idx2name(self,idx):
         return self.name_list[idx]
 
-    def __getitem__(self,idx):
+    def getitem(self,idx):
 
 
-        return np.fromfile(join(self.pc_pred_path,self.pc_pred_list[idx]), dtype=np.uint32),\
+        # return np.fromfile(join(self.pc_pred_path,self.pc_pred_list[idx]), dtype=np.uint32),\
+        #      np.fromfile(join(self.uncertainty_path,self.uncertainty_list[idx]), dtype=np.float32)
+        
+        #? why int32?  not uint32 according to origin evaluation code.
+        return np.fromfile(join(self.pc_pred_path,self.pc_pred_list[idx]), dtype=np.int32),\
              np.fromfile(join(self.uncertainty_path,self.uncertainty_list[idx]), dtype=np.float32)
+        
+    '''
+    description: for evaluation 
+    param {*} self
+    param {*} idx
+    return {*}
+    '''
+    def __getitem__(self,idx):
+        predictions,scores=self.getitem(idx)
+
+        predictions = predictions.reshape((-1)) & 0xFFFF 
+        scores = scores.reshape((-1))
+
+
+        
+        # return join(self.pc_pred_path,self.pc_pred_list[idx]),\
+        #         join(self.uncertainty_path,self.uncertainty_list[idx])
+    
+        return predictions,scores
+                
+
+    def get_prediction_list(self):
+        
+        ans = []
+        for idx in range(self.__len__()):
+            ans.append(self.__getitem__(idx))
+        return ans
         
         
     def is_mapped(self):
-        pc_pred ,uncertainty= self.__getitem__(0)
+        pc_pred ,uncertainty= self.getitem(0)
+        print(np.unique(pc_pred),len(np.unique(pc_pred)))
         
         # print(np.unique(pc_pred),len(np.unique(pc_pred)))
-        
         return pc_pred.max() >19
         
-    def tmp(self):
-        pc_pred ,uncertainty= self.__getitem__(0)
-        print(np.unique(pc_pred),len(np.unique(pc_pred)))
+        
 
     
 

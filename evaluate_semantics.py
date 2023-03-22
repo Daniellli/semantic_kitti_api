@@ -164,12 +164,6 @@ if __name__ == '__main__':
       ignore.append(x_cl)
       print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
 
-  # tensorboard writer
-  # epoch_string = FLAGS.prediction_source_folder[FLAGS.prediction_source_folder.rfind('epoch_')+6:]
-  # if len(epoch_string) > 0:
-  #     epoch = int(epoch_string)
-  # else:
-  #     epoch = None
 
   epoch = None
   if FLAGS.prediction_source_folder is not None:
@@ -208,38 +202,37 @@ if __name__ == '__main__':
 
   # get predictions paths
   pred_names = []#* why define it at here
+  scores_names = []
   for sequence in test_sequences:
     sequence = '{0:02d}'.format(int(sequence))
     
-    if FLAGS.prediction_source_folder is None:
-        point_predict_folder = "predictions_2dummy_1_01_final_cross_latest"
-        uncertainty_predict_folder = "scores_softmax_2dummy_1_01_final_latest"
+    # if FLAGS.prediction_source_folder is None:
+    #     point_predict_folder = "predictions_2dummy_1_01_final_cross_latest"
+    #     uncertainty_predict_folder = "scores_softmax_2dummy_1_01_final_latest"
         
-    else:
-        point_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.point_predict_folder_name
-        uncertainty_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.uncertainty_folder_name
+    # else:
+    #     point_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.point_predict_folder_name
+    #     uncertainty_predict_folder = FLAGS.prediction_source_folder + '/' + FLAGS.uncertainty_folder_name
 
     pred_paths = os.path.join(FLAGS.predictions, "sequences",
-                              sequence, point_predict_folder)
+                              sequence, 'point_predict')
     #* populate/add the label names
     seq_pred_names = [os.path.join(dp, f) for dp, dn, fn in os.walk(
         os.path.expanduser(pred_paths)) for f in fn if ".label" in f]
     seq_pred_names.sort()
     pred_names.extend(seq_pred_names)
-  # print(pred_names)
+    
 
     #* get uncertainty scores paths
-    scores_names = []
-    for sequence in test_sequences:
-        sequence = '{0:02d}'.format(int(sequence))
-        scores_paths = os.path.join(FLAGS.predictions, "sequences",
-                                  sequence, uncertainty_predict_folder)
-        # populate the label names
-        seq_scores_names = [os.path.join(dp, f) for dp, dn, fn in os.walk(
-            os.path.expanduser(scores_paths)) for f in fn if ".label" in f]
-        seq_scores_names.sort()
-        scores_names.extend(seq_scores_names)
+    scores_paths = os.path.join(FLAGS.predictions, "sequences",
+                              sequence, 'uncertainty')
+    # populate the label names
+    seq_scores_names = [os.path.join(dp, f) for dp, dn, fn in os.walk(
+        os.path.expanduser(scores_paths)) for f in fn if ".label" in f]
+    seq_scores_names.sort()
+    scores_names.extend(seq_scores_names)
     # print(scores_names)
+    
 
   # check that I have the same number of files
   print("labels: ", len(label_names))

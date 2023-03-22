@@ -4,6 +4,13 @@
 import sys
 import numpy as np
 
+from os.path import join ,exists,split
+from sklearn.metrics import precision_recall_curve, auc, roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+
+
+
 
 class iouEval:
   def __init__(self, n_classes, ignore=None, writer=None, epoch=None):
@@ -81,7 +88,7 @@ class iouEval:
   def get_confusion(self):
     return self.conf_matrix.copy()
 
-  def get_unknown_indices(self):
+  def get_unknown_indices(self,save_dir):
     self.unknown_labels = np.concatenate(self.unknown_labels)
     self.unknown_scores = np.concatenate(self.unknown_scores)
     valid = self.unknown_labels != 0
@@ -93,36 +100,38 @@ class iouEval:
 
     scores_distribution_ood = self.unknown_scores[self.unknown_labels == 1]
     scores_distribution_in = self.unknown_scores[self.unknown_labels != 1]
-    scores_distribution_ood.tofile('../semantic_kitti/analyze/scores_softmax_3dummy_base_ood.score')
-    scores_distribution_in.tofile('../semantic_kitti/analyze/scores_softmax_3dummy_base_in.score')
-    print('Save scores distribution successfully!')
 
-    from sklearn.metrics import precision_recall_curve, auc, roc_curve, roc_auc_score
+
+    scores_distribution_ood.tofile(join(save_dir,"scores_softmax_3dummy_base_ood.score"))
+    scores_distribution_in.tofile(join(save_dir,"scores_softmax_3dummy_base_in.score"))
+    # print('Save scores distribution successfully!')
 
     precision, recall, _ = precision_recall_curve(self.unknown_labels, self.unknown_scores)#* take long time
     aupr_score = auc(recall, precision)
-    print('AUPR is: ', aupr_score)
-    import matplotlib.pyplot as plt
+    
+    
 
-    # plt.plot(recall, precision)
-    # plt.xlabel("recall")
-    # plt.ylabel("precision")
-    # plt.title("AUPR: " + str(aupr_score))
-    # plt.show()
+    plt.plot(recall, precision)
+    plt.xlabel("recall")
+    plt.ylabel("precision")
+    plt.title("AUPR: " + str(aupr_score))
+    plt.savefig(join(save_dir,'AUPR.jpg'))
 
+
+    plt.figure()
     fpr, tpr, _ = roc_curve(self.unknown_labels, self.unknown_scores)
     plt.plot(fpr, tpr)
     plt.xlabel("fpr")
     plt.ylabel("tpr")
     plt.title("AUROC: " + str(auc(fpr, tpr)))
-    plt.show()
-    # plt.savefig('logs/tmp.jpg')
-
+    plt.savefig(join(save_dir,'AUROC.jpg'))
+    
     auroc_score_1 = auc(fpr, tpr)
     # auroc_score_2 = roc_auc_score(self.unknown_labels, self.unknown_scores)
+
+    print('AUPR is: ', aupr_score)
     print('AUROC is: ', auroc_score_1)
     print('FPR95 is: ', fpr[tpr > 0.95][0])
-    
 
     #!+===================================
     accumulated_res  = {

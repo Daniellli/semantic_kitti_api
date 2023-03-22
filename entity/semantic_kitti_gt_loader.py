@@ -52,6 +52,37 @@ def downsample_pc(pc,label ,num = 40000):
 
 
 
+'''
+description: for multiple sequence evaluation 
+return {*}
+'''
+class MultiSementicKittiGtLoader:
+    
+
+    def __init__(self,root,sequence_list):
+
+        
+        loader_list = []
+        for sequence in sequence_list:
+            loader_list.append( SementicKittiGtLoader(root,sequence))
+        
+        
+        #* accumulate label name :
+        
+        accumulated_labels = []
+        for loader in loader_list:
+            accumulated_labels += loader.get_label_list()
+
+        self.accumulated_labels = accumulated_labels
+            
+
+    def __len__(self):
+        return len(self.accumulated_labels)
+    
+
+    def __getitem__(self,idx):
+        
+        return self.accumulated_labels[idx]
 
 
 class SementicKittiGtLoader:
@@ -80,6 +111,11 @@ class SementicKittiGtLoader:
         self.save_dir=  'logs/vis'
         make_dir(self.save_dir)
 
+    def get_label_list(self):
+        ans = []
+        for idx in range(self.__len__()):
+            ans.append(self.__getitem__(idx))
+        return ans 
         
 
         
@@ -91,7 +127,7 @@ class SementicKittiGtLoader:
 
     def get_label(self,idx):
          
-        print(self.labels[idx])
+        # print(self.labels[idx])
         label = np.fromfile(join(self.label_path,self.labels[idx]), dtype=np.uint32)
 
         sem_label = label & 0xFFFF  # semantic label in lower half
@@ -112,7 +148,7 @@ class SementicKittiGtLoader:
 
     def get_velodyne(self,idx):
         
-        print(self.velodynes[idx])
+        # print(self.velodynes[idx])
 
         scan = np.fromfile(join(self.velodyne_path,self.velodynes[idx]), dtype=np.float32)
         scan = scan.reshape((-1, 4))
@@ -134,6 +170,15 @@ class SementicKittiGtLoader:
 
         
         write_ply_color(pc,label,filename=join(self.save_dir,self.idx2name(idx)+".ply"))
+        
+    def __getitem__(self,idx):
+        sem_label,inst_label = self.get_label(idx)
+
+
+        # return join(self.label_path,self.labels[idx])
+        return sem_label
+    
+
         
 
 
