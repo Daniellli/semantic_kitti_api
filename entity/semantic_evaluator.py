@@ -32,6 +32,10 @@ from entity.semantic_kitti_gt_loader import SementicKittiGtLoader,MultiSementicK
 from entity.prediction_loader import MultiPredictionLoader,PredictionLoader
 
 
+from utils.utils import process_mp
+
+from IPython import embed
+
 
 def parse_args():
   parser = argparse.ArgumentParser("./evaluate_semantics.py")
@@ -44,11 +48,19 @@ def parse_args():
   parser.add_argument(
       '--predictions', '-p',
       type=str,
-      required=None,
+      required=False,
       help='Prediction dir. Same organization as dataset, but predictions in'
       'each sequences "prediction" directory. No Default. If no option is set'
       ' we look for the labels in the same directory as dataset'
   )
+  
+  parser.add_argument(
+      '--predictions-root',
+      type=str,
+      required=False,
+      default=None,
+  )
+
   parser.add_argument(
       '--split', '-s',
       type=str,
@@ -134,22 +146,35 @@ def parse_args():
 
 
 
+    
+    
+
+
 class SementicEvaluator:
-
-
-  def __init__(self,args) -> None:
-
+  '''
+  description: 
+  param {*} self
+  param {*} args
+  dataset_path
+  prediction_path
+  datacfg
+  split
+  return {*}
+  '''
+  def __init__(self,dataset_path,prediction_path,data_config_path,split='valid'):
 
     #* 0.  init logger 
 
     #* 1. generate gt and prediction loader
-    self.args = args
+    self.split = split
 
-    self.get_data_config()
+    self.get_data_config(data_config_path)
+    
+    self.save_dir = prediction_path
 
-    self.label_loader =MultiSementicKittiGtLoader(self.args.dataset,self.test_sequences)
+    self.label_loader =MultiSementicKittiGtLoader(dataset_path,self.test_sequences)
 
-    self.prediction_loader = MultiPredictionLoader(self.args.predictions,self.test_sequences)
+    self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
 
     #* 2. create evaluator 
     evaluator = iouEval(len(self.data_cfg["learning_map_inv"]), self.ignore, 
@@ -160,9 +185,9 @@ class SementicEvaluator:
 
 
 
-  def get_data_config(self):
-      print("Opening data config file %s" % self.args.datacfg)
-      DATA = yaml.safe_load(open(self.args.datacfg, 'r'))
+  def get_data_config(self,data_config_path):
+      print("Opening data config file %s" % data_config_path)
+      DATA = yaml.safe_load(open(data_config_path, 'r'))
       self.data_cfg = DATA
 
       # get number of interest classes, and the label mappings
@@ -189,12 +214,9 @@ class SementicEvaluator:
 
       self.ignore = ignore
       # get test set
-      self.test_sequences = ['{0:02d}'.format(int(x)) for x in DATA["split"][self.args.split]]
+      self.test_sequences = ['{0:02d}'.format(int(x)) for x in DATA["split"][self.split]]
 
       
-
-
-
 
   '''
   description: 
@@ -208,10 +230,19 @@ class SementicEvaluator:
           label = label[:FLAGS.limit]  # limit to desired length
   '''
   def __call__(self):
+
+
     if not self.prediction_loader.is_mapped():
       logger.info(f"please mapped first ")
-
       return 
+    
+    save_file = join(self.save_dir,'anomaly_eval_results.json')
+
+    if exists(save_file):
+      logger.error(f"already evaluated!")
+      return
+    
+
     progress = tqdm(self.label_loader)
     length =self.label_loader.__len__()
     for idx, label in enumerate(progress):
@@ -234,11 +265,11 @@ class SementicEvaluator:
       progress.update(idx//length)
 
     tic = time.time()
-    eval_res = self.evaluator.get_unknown_indices(self.args.predictions) #* take long time
+    eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
     
 
-    with open(join(self.args.predictions,'anomaly_eval_results.json'),'w') as f :
+    with open(save_file,'w') as f :
       json.dump(eval_res,f)
       
     ''' 
@@ -283,18 +314,51 @@ class SementicEvaluator:
     print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 
 
-      
 
+
+class MultiSementicEvaluator:
+
+
+  def __init__(self,dataset_path,prediction_path_list,data_config_path,split='valid'):
+
+
+    logger.info('start to init')
+    evaluator_list = []
+    for prediction in prediction_path_list:
+      logger.info(f' ready to inti {prediction}')
+      evaluator_list.append(
+        SementicEvaluator(dataset_path,prediction,data_config_path,split)
+      )
+    self.evaluator_list = evaluator_list
+    logger.info('init done ')
+
+
+  '''
+  description: the number of evaluator 
+  param {*} self
+  return {*}
+  '''
+  def __len__(self):
+    return len(self.evaluator_list)
+
+  def eval_one(self,idx):
     
 
+    (self.evaluator_list[idx]).__call__()
+
+
+  def __call__(self,thread = 512):
+
+    tic = time.time()
+    embed()
+    process_mp(self.eval_one,range(self.__len__()),thread=thread)
+    print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 
 
 if __name__ == '__main__':
   FLAGS, unparsed = parse_args()
   
   tic = time.time()
-
-
   # print summary of what we will do
   logger.info("*" * 80)
   for k, v in FLAGS.__dict__.items():
@@ -302,10 +366,21 @@ if __name__ == '__main__':
   logger.info("*" * 80)
 
   assert(FLAGS.split in splits)
+  
+  if FLAGS.predictions_root is not None :
+    prediction_list = []
+    for model_name in os.listdir(FLAGS.predictions_root):
+      prediction_path = join(FLAGS.predictions_root,model_name)
+      if exists(prediction_path):
+        prediction_list.append(prediction_path)
+    logger.info(f"ready to eval {len(prediction_path)} model")
 
-
-  evaluator = SementicEvaluator(FLAGS)
-  evaluator()
+    evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list,FLAGS.datacfg,split=FLAGS.split)
+    logger.info("start evaluating ")
+    evaluator()
+  else:
+    evaluator = SementicEvaluator(FLAGS.dataset,FLAGS.predictions,FLAGS.datacfg,split=FLAGS.split)
+    evaluator()
 
   print('total spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 

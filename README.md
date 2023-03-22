@@ -5,7 +5,7 @@ including AURP, AUROC, and FPR95 in this repository.
 
 To use this repository for calculating metrics, the closed-set prediction labels and uncertainty scores
 for each points in the dataset should be generated and saved as:
-### SemanticKITTI
+## SemanticKITTI  Directory Orgnization 
 ```
 ./
 ├── 
@@ -37,6 +37,59 @@ for each points in the dataset should be generated and saved as:
         |       ├── 000001.score
         |       └── ...
 ```
+
+
+
+## Modify Log 
+
+
+### 2023-3-22
+
+1. wrap remapper, evluator  and some other loader  in entity
+    - prediction loader
+    - gt loader 
+2. move all of the origin unrelated files into tmp directory
+3.  bash scripts in scripts
+such as remapper  following, which remap all of model prediction in `prediction_root`:
+```
+prediction_root="datasets/predictions/Jan19_four_losses_with_shapenet_anomaly/model_epoch_";
+start_epoch=0;
+total_epoch=50;
+
+#* 只能用python 程序解决
+for (( i=$start_epoch; i<$total_epoch; i++ ))
+do
+
+    pred_path=${prediction_root}${i};
+
+    if test -d $pred_path
+    then
+        echo processing: $pred_path ;
+        python entity/remapper.py \
+        --predictions $pred_path \
+        --split valid --inverse \
+        2>&1 | tee -a logs/remap_$i.log
+
+    fi
+done
+```
+
+
+
+and eval one epoch as follows: 
+```
+prediction=datasets/predictions/Jan19_four_losses_with_shapenet_anomaly/model_epoch_39;
+
+python entity/semantic_evaluator.py --dataset datasets/dataset \
+--predictions $prediction --split valid \
+2>&1 | tee -a logs/new_eval_code.log
+
+```
+
+
+
+
+
 
 ## Evaluation
 ### SemanticKITTI

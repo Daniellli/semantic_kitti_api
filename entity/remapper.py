@@ -92,7 +92,8 @@ class ReMapper:
     
     #* assume: if(FLAGS.predictions is not None) is always right 
     self.prediction_root = prediction
-    self.label_dir_name = "point_predict" #* the directory which  all label file in it need to remap 
+    #* the directory which  all label file in it need to remap 
+    self.label_dir_name = "point_predict" 
     
 
     #* get map dict
@@ -140,7 +141,7 @@ class ReMapper:
     for sequence in self.sequence:
       sequence = '{0:02d}'.format(int(sequence))
       
-      label_paths = join(self.prediction_root, self.label_dir_name)
+      label_paths = join(self.prediction_root, 'sequences',sequence,self.label_dir_name)
 
       # populate the label names
       seq_label_names = sorted([os.path.join(dp, f) for dp, dn, fn in os.walk(
