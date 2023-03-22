@@ -267,7 +267,6 @@ class SementicEvaluator:
     tic = time.time()
     eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
-    
 
     with open(save_file,'w') as f :
       json.dump(eval_res,f)
@@ -342,16 +341,14 @@ class MultiSementicEvaluator:
     return len(self.evaluator_list)
 
   def eval_one(self,idx):
-    
 
-    (self.evaluator_list[idx]).__call__()
+    self.evaluator_list[idx]()
 
 
   def __call__(self,thread = 512):
 
     tic = time.time()
-    embed()
-    process_mp(self.eval_one,range(self.__len__()),thread=thread)
+    process_mp(self.eval_one,range(self.__len__()),num_threads=thread)
     print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 
 
@@ -375,9 +372,10 @@ if __name__ == '__main__':
         prediction_list.append(prediction_path)
     logger.info(f"ready to eval {len(prediction_list)} model")
 
-    evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list,FLAGS.datacfg,split=FLAGS.split)
+    evaluator = MultiSementicEvaluator(FLAGS.dataset,prediction_list[4:10],FLAGS.datacfg,split=FLAGS.split)
     logger.info("start evaluating ")
-    evaluator()
+    # evaluator()
+    evaluator(128)
   else:
     evaluator = SementicEvaluator(FLAGS.dataset,FLAGS.predictions,FLAGS.datacfg,split=FLAGS.split)
     evaluator()
