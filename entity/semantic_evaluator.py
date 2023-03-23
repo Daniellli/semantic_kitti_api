@@ -36,6 +36,12 @@ from utils.utils import process_mp
 
 from IPython import embed
 
+import json
+
+
+
+
+
 
 def parse_args():
   parser = argparse.ArgumentParser("./evaluate_semantics.py")
@@ -183,10 +189,30 @@ class SementicEvaluator:
     self.evaluator = evaluator
 
 
+  def get_anomaly_matrics(self):
+    with open(join(self.save_dir,'anomaly_eval_results.json'),'r') as f:
+      data = json.load(f)
+    return data 
+  
+
+  def get_metric_AUPR(self):
+    
+    data = self.get_anomaly_matrics()
+    return data['OOD/AUPR']
+    
+
+  def get_metric_AUROC(self):
+    data = self.get_anomaly_matrics()
+    return data['OOD/AUROC']
+  
+  def get_metric_FPR95(self):
+    data = self.get_anomaly_matrics()
+    return data['OOD/FPR95']
+
 
 
   def get_data_config(self,data_config_path):
-      print("Opening data config file %s" % data_config_path)
+      # print("Opening data config file %s" % data_config_path)
       DATA = yaml.safe_load(open(data_config_path, 'r'))
       self.data_cfg = DATA
 
@@ -210,7 +236,9 @@ class SementicEvaluator:
         if ign:
           x_cl = int(cl)
           ignore.append(x_cl)
-          print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
+          #!+====================
+          # print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
+          #!+====================
 
       self.ignore = ignore
       # get test set
