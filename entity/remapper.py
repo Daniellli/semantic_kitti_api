@@ -82,7 +82,7 @@ class ReMapper:
   return {*}
   '''  
   def __init__(self,prediction,datacfg='config/semantic-kitti.yaml',
-                inverse=False,split='valid'):
+                inverse=False,split='valid',gt_loader =None):
     
     self.split = split
     self.inverse = inverse
@@ -103,8 +103,11 @@ class ReMapper:
     self.get_predictions()
     
     #* remap precition one by one 
+    if gt_loader is None :
+      self.gt_loader = SementicKittiGtLoader('datasets/dataset')
+    else:
+      self.gt_loader = gt_loader
 
-    self.gt_loader = SementicKittiGtLoader('datasets/dataset')
 
 
   def get_map_dict(self):

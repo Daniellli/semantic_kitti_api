@@ -36,6 +36,12 @@ from utils.utils import process_mp
 
 from IPython import embed
 
+import json
+
+
+
+
+
 
 def parse_args():
   parser = argparse.ArgumentParser("./evaluate_semantics.py")
@@ -148,6 +154,7 @@ def parse_args():
 
     
     
+from entity.remapper import ReMapper
 
 
 class SementicEvaluator:
@@ -168,13 +175,24 @@ class SementicEvaluator:
     #* 1. generate gt and prediction loader
     self.split = split
 
+    
+    
+
+
     self.get_data_config(data_config_path)
     
     self.save_dir = prediction_path
 
     self.label_loader =MultiSementicKittiGtLoader(dataset_path,self.test_sequences)
-
+    self.remapper = ReMapper(prediction=prediction_path,
+                          datacfg=data_config_path,
+                          inverse=True,split=split,gt_loader = self.label_loader )
+    
     self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
+
+
+    assert  self.prediction_loader.__len__() == self.label_loader.__len__()
+
 
     #* 2. create evaluator 
     evaluator = iouEval(len(self.data_cfg["learning_map_inv"]), self.ignore, 
@@ -183,10 +201,30 @@ class SementicEvaluator:
     self.evaluator = evaluator
 
 
+  def get_anomaly_matrics(self):
+    with open(join(self.save_dir,'anomaly_eval_results.json'),'r') as f:
+      data = json.load(f)
+    return data 
+  
+
+  def get_metric_AUPR(self):
+    
+    data = self.get_anomaly_matrics()
+    return data['OOD/AUPR']
+    
+
+  def get_metric_AUROC(self):
+    data = self.get_anomaly_matrics()
+    return data['OOD/AUROC']
+  
+  def get_metric_FPR95(self):
+    data = self.get_anomaly_matrics()
+    return data['OOD/FPR95']
+
 
 
   def get_data_config(self,data_config_path):
-      print("Opening data config file %s" % data_config_path)
+      # print("Opening data config file %s" % data_config_path)
       DATA = yaml.safe_load(open(data_config_path, 'r'))
       self.data_cfg = DATA
 
@@ -210,7 +248,9 @@ class SementicEvaluator:
         if ign:
           x_cl = int(cl)
           ignore.append(x_cl)
-          print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
+          #!+====================
+          # print("Ignoring xentropy class ", x_cl, " in IoU evaluation")
+          #!+====================
 
       self.ignore = ignore
       # get test set
@@ -233,10 +273,14 @@ class SementicEvaluator:
 
 
     if not self.prediction_loader.is_mapped():
-      logger.info(f"please mapped first ")
-      return 
+      logger.info(f"ready to map ")
+      self.remapper()
+      
+      logger.info(f"maping done ")
+      
     
     save_file = join(self.save_dir,'anomaly_eval_results.json')
+    # iou_save_file = join(self.save_dir,'iou_eval_results.json')
 
     if exists(save_file):
       logger.error(f"already evaluated!")
@@ -245,6 +289,7 @@ class SementicEvaluator:
 
     progress = tqdm(self.label_loader)
     length =self.label_loader.__len__()
+
     for idx, label in enumerate(progress):
       pred,scores = self.prediction_loader[idx]
     
@@ -255,6 +300,8 @@ class SementicEvaluator:
       label = label[valid_index]
 
       pred = self.remap_lut[pred]       # remap to xentropy format
+      
+      # embed()
       pred = pred[valid_index]
 
       
@@ -268,8 +315,7 @@ class SementicEvaluator:
     eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
 
-    with open(save_file,'w') as f :
-      json.dump(eval_res,f)
+    
       
     ''' 
     description:   print the sementic evaluation results but unuseful for anomaly detection ?
@@ -279,39 +325,55 @@ class SementicEvaluator:
     param {*} class_inv_remap
     return {*}
     '''
-    def print_eval_results(evaluator):
-      # when I am done, print the evaluation
-      class_inv_remap = self.data_cfg['learning_map_inv']
-      class_strings = self.data_cfg["labels"]
-        
-      m_accuracy = evaluator.getacc()
-      m_jaccard, class_jaccard = evaluator.getIoU()
-    
-      print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',
-            'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
+    def print_eval_results():
+        classes_ious = {}
+        # when I am done, print the evaluation
+        class_inv_remap = self.data_cfg['learning_map_inv']
+        class_strings = self.data_cfg["labels"]
+          
+        m_accuracy = self.evaluator.getacc()
+        m_jaccard, class_jaccard = self.evaluator.getIoU()
       
-      # print also classwise
-      for i, jacc in enumerate(class_jaccard):
-        if i not in self.ignore:
-          print('IoU class {i:} [{class_str:}] = {jacc:.3f}'.format(
-              i=i, class_str=class_strings[class_inv_remap[i]], jacc=jacc))
+        print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
+              'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
+        classes_ious['Acc avg'] = m_accuracy
+        classes_ious['IoU avg'] = m_jaccard
 
-      # print for spreadsheet
-      print("*" * 80)
-      print("below can be copied straight for paper table")
-      for i, jacc in enumerate(class_jaccard):
-        if i not in self.ignore:
-          sys.stdout.write('{jacc:.3f}'.format(jacc=jacc.item()))
-          sys.stdout.write(",")
-      sys.stdout.write('{jacc:.3f}'.format(jacc=m_jaccard.item()))
-      sys.stdout.write(",")
-      sys.stdout.write('{acc:.3f}'.format(acc=m_accuracy.item()))
-      sys.stdout.write('\n')
-      sys.stdout.flush()
+        # print also classwise
+        
+        for i, jacc in enumerate(class_jaccard):
+          if i not in self.ignore:
+            print('IoU class {i:} [{class_str:}] = {jacc:.3f}'.format( i=i, class_str=class_strings[class_inv_remap[i]], jacc=jacc))
+            classes_ious[ class_strings[class_inv_remap[i]] ] = jacc
 
+        # print for spreadsheet
+        print("*" * 80)
+        print("below can be copied straight for paper table")
+        for i, jacc in enumerate(class_jaccard):
+          if i not in self.ignore:
+            sys.stdout.write('{jacc:.3f}'.format(jacc=jacc.item()))
+            sys.stdout.write(",")
+        sys.stdout.write('{jacc:.3f}'.format(jacc=m_jaccard.item()))
+        sys.stdout.write(",")
+        sys.stdout.write('{acc:.3f}'.format(acc=m_accuracy.item()))
+        sys.stdout.write('\n')
+        sys.stdout.flush()
+        
+        return classes_ious
+    
+
+    classes_ious = print_eval_results()
+
+    eval_res.update(classes_ious)
+
+    with open(save_file,'w') as f :
+        json.dump(eval_res,f)
+
+    # with open(iou_save_file,'w') as f :
+    #   json.dump(classes_ious,f)
+    
 
     print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
-
 
 
 
