@@ -19,6 +19,8 @@ outputs
 utils
 
 
+model_save_path
+
 
 
 
@@ -29,3 +31,11 @@ utils
 
 model_save_path
 
+logs
+
+
+
+*pyc*
+
+
+utils
