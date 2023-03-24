@@ -12,10 +12,8 @@
 
 prediction_root=datasets/predictions/Jan19_four_losses_with_shapenet_anomaly/model_epoch_;
 
-
-
 start_epoch=0;
-total_epoch=50;
+total_epoch=10;
 
 for (( i=$start_epoch; i<$total_epoch; i++ ))
 do
