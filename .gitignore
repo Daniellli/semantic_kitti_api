@@ -20,3 +20,11 @@ utils
 
 
 
+
+
+
+*pyc*
+
+*__pycache__*
+
+model_save_path
