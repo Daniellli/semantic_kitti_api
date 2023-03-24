@@ -6,3 +6,18 @@
 
 outputs
 
+
+
+model_save_path
+
+
+
+
+logs
+
+
+
+*pyc*
+
+
+utils
