@@ -274,13 +274,13 @@ class SementicEvaluator:
 
     if not self.prediction_loader.is_mapped():
       logger.info(f"ready to map ")
-      self.remapper(128)
+      self.remapper()
       
       logger.info(f"maping done ")
       
     
     save_file = join(self.save_dir,'anomaly_eval_results.json')
-    iou_save_file = join(self.save_dir,'iou_eval_results.json')
+    # iou_save_file = join(self.save_dir,'iou_eval_results.json')
 
     if exists(save_file):
       logger.error(f"already evaluated!")
@@ -315,8 +315,7 @@ class SementicEvaluator:
     eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
 
-    with open(save_file,'w') as f :
-      json.dump(eval_res,f)
+    
       
     ''' 
     description:   print the sementic evaluation results but unuseful for anomaly detection ?
@@ -326,27 +325,25 @@ class SementicEvaluator:
     param {*} class_inv_remap
     return {*}
     '''
-    def print_eval_results(evaluator):
+    def print_eval_results():
         classes_ious = {}
         # when I am done, print the evaluation
         class_inv_remap = self.data_cfg['learning_map_inv']
         class_strings = self.data_cfg["labels"]
           
-        m_accuracy = evaluator.getacc()
-        m_jaccard, class_jaccard = evaluator.getIoU()
+        m_accuracy = self.evaluator.getacc()
+        m_jaccard, class_jaccard = self.evaluator.getIoU()
       
-        print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',
+        print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
               'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
         classes_ious['Acc avg'] = m_accuracy
-        classes_ious['IoU avg']:m_jaccard
+        classes_ious['IoU avg'] = m_jaccard
 
         # print also classwise
         
         for i, jacc in enumerate(class_jaccard):
           if i not in self.ignore:
-
             print('IoU class {i:} [{class_str:}] = {jacc:.3f}'.format( i=i, class_str=class_strings[class_inv_remap[i]], jacc=jacc))
-
             classes_ious[ class_strings[class_inv_remap[i]] ] = jacc
 
         # print for spreadsheet
@@ -363,11 +360,17 @@ class SementicEvaluator:
         sys.stdout.flush()
         
         return classes_ious
+    
 
-    classes_ious = print_eval_results(evaluator)
+    classes_ious = print_eval_results()
 
-    with open(iou_save_file,'w') as f :
-      json.dump(classes_ious,f)
+    eval_res.update(classes_ious)
+
+    with open(save_file,'w') as f :
+        json.dump(eval_res,f)
+
+    # with open(iou_save_file,'w') as f :
+    #   json.dump(classes_ious,f)
     
 
     print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
