@@ -324,8 +324,7 @@ class SementicEvaluator:
     eval_res['Acc avg'] = m_accuracy
     eval_res['IoU avg'] = m_jaccard
 
-    print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
-          'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
+    print('Validation set:\n Acc avg {m_accuracy:.3f}\n IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
 
     class_inv_remap = self.data_cfg['learning_map_inv']
     class_strings = self.data_cfg["labels"]
