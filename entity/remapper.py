@@ -179,9 +179,8 @@ class ReMapper:
       label = label.astype(np.uint32)
       label.tofile(label_file)
 
-  def __call__(self,threads=128):
-    tic = time.time()
-
+  def __call__(self):
+    
     if self.__len__() != self.gt_loader.__len__() :
       print(" inference process  is uncomplete, please inference again")
       return 
@@ -189,12 +188,8 @@ class ReMapper:
 
     for idx in range(self.__len__()):
       self.remap(idx)
-      
-
+    
     # process_mp(self.remap,list(range(self.__len__())),threads)
-    print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
-    print("remap done ")
-
 
 
 if __name__ == '__main__':
@@ -204,4 +199,4 @@ if __name__ == '__main__':
                       FLAGS.datacfg,
                       inverse=FLAGS.inverse,
                       split=FLAGS.split)
-  remapper(256)
+  remapper()

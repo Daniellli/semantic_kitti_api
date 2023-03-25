@@ -270,15 +270,10 @@ class SementicEvaluator:
 
 
     if not self.prediction_loader.is_mapped():
-      logger.info(f"ready to map ")
-      threshold = 16 
-
-      tic = time.time()
-      self.remapper(threshold)
-      print(f'threshold = {threshold}, remapper spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
+      # tic = time.time()
+      self.remapper()
+      # print(f'remapper spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
       
-      
-      logger.info(f"maping done ")
       
     
     save_file = join(self.save_dir,'anomaly_eval_results.json')
@@ -313,9 +308,9 @@ class SementicEvaluator:
       self.evaluator.addBatch(pred, label, scores)
       progress.update(idx//length)
 
-    tic = time.time()
+    # tic = time.time()
     eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
-    print('get_unknown_indices spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
+    # print('get_unknown_indices spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
 
     
       
@@ -371,13 +366,6 @@ class SementicEvaluator:
     with open(save_file,'w') as f :
         json.dump(eval_res,f)
 
-    # with open(iou_save_file,'w') as f :
-    #   json.dump(classes_ious,f)
-    
-
-    print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
-
-
 
 class MultiSementicEvaluator:
 
@@ -411,9 +399,9 @@ class MultiSementicEvaluator:
 
   def __call__(self,thread = 512):
 
-    tic = time.time()
+    # tic = time.time()
     process_mp(self.eval_one,range(self.__len__()),num_threads=thread)
-    print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
+    # print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 
 
 if __name__ == '__main__':
