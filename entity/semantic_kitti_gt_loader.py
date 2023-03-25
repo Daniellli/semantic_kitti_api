@@ -107,9 +107,9 @@ class SementicKittiGtLoader:
 
         self.velodynes =sorted( [x for x in os.listdir(self.velodyne_path) if x.endswith('bin')])
 
-
-        self.save_dir=  'logs/vis'
-        make_dir(self.save_dir)
+        
+        
+        
 
     def get_label_list(self):
         ans = []
@@ -162,6 +162,9 @@ class SementicKittiGtLoader:
     
 
     def save(self,idx):
+        #* for debug 
+        self.save_dir =  'logs/vis'
+        make_dir(self.save_dir)
 
         label = self.get_label(idx)
         pc ,_= self.get_velodyne(idx)
