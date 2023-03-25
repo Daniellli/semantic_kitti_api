@@ -308,63 +308,35 @@ class SementicEvaluator:
       self.evaluator.addBatch(pred, label, scores)
       progress.update(idx//length)
 
-    # tic = time.time()
-    eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
-    # print('get_unknown_indices spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
 
+    m_accuracy = self.evaluator.getacc()
+    m_jaccard, class_jaccard = self.evaluator.getIoU()
+
+
+    eval_res_anomaly = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
+
+
+    eval_res = {}
+    eval_res['Acc avg'] = m_accuracy
+    eval_res['IoU avg'] = m_jaccard
+
+    print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
+          'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
+
+    class_inv_remap = self.data_cfg['learning_map_inv']
+    class_strings = self.data_cfg["labels"]
     
-      
-    ''' 
-    description:   print the sementic evaluation results but unuseful for anomaly detection ?
-    param {*} class_jaccard
-    param {*} ignore
-    param {*} class_strings
-    param {*} class_inv_remap
-    return {*}
-    '''
-    def print_eval_results():
-        classes_ious = {}
-        # when I am done, print the evaluation
-        class_inv_remap = self.data_cfg['learning_map_inv']
-        class_strings = self.data_cfg["labels"]
-          
-        m_accuracy = self.evaluator.getacc()
-        m_jaccard, class_jaccard = self.evaluator.getIoU()
-      
-        print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
-              'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
-        classes_ious['Acc avg'] = m_accuracy
-        classes_ious['IoU avg'] = m_jaccard
+    for i, jacc in enumerate(class_jaccard):
+      if i not in self.ignore:
+        print('IoU class {i:} [{class_str:}] = {jacc:.3f}'.format( i=i, class_str=class_strings[class_inv_remap[i]], jacc=jacc))
+        eval_res[ class_strings[class_inv_remap[i]] ] = jacc
 
-        # print also classwise
-        
-        for i, jacc in enumerate(class_jaccard):
-          if i not in self.ignore:
-            print('IoU class {i:} [{class_str:}] = {jacc:.3f}'.format( i=i, class_str=class_strings[class_inv_remap[i]], jacc=jacc))
-            classes_ious[ class_strings[class_inv_remap[i]] ] = jacc
 
-        # print for spreadsheet
-        print("*" * 80)
-        print("below can be copied straight for paper table")
-        for i, jacc in enumerate(class_jaccard):
-          if i not in self.ignore:
-            sys.stdout.write('{jacc:.3f}'.format(jacc=jacc.item()))
-            sys.stdout.write(",")
-        sys.stdout.write('{jacc:.3f}'.format(jacc=m_jaccard.item()))
-        sys.stdout.write(",")
-        sys.stdout.write('{acc:.3f}'.format(acc=m_accuracy.item()))
-        sys.stdout.write('\n')
-        sys.stdout.flush()
-        
-        return classes_ious
+    eval_res_anomaly.update(eval_res)
     
-
-    classes_ious = print_eval_results()
-
-    eval_res.update(classes_ious)
 
     with open(save_file,'w') as f :
-        json.dump(eval_res,f)
+        json.dump(eval_res_anomaly,f)
 
 
 class MultiSementicEvaluator:

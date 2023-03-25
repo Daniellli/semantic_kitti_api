@@ -116,6 +116,7 @@ class ReMapper:
     DATA = yaml.safe_load(open(self.datacfg, 'r'))
 
     # get number of interest classes, and the label mappings
+    #todo check whether inverse == True
     if self.inverse:
       # print("Mapping xentropy to original labels")
       remapdict = DATA["learning_map_inv"]
