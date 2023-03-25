@@ -168,15 +168,12 @@ class SementicEvaluator:
   split
   return {*}
   '''
-  def __init__(self,dataset_path,prediction_path,data_config_path,split='valid'):
+  def __init__(self,dataset_path,prediction_path,data_config_path=None,split='valid'):
 
     #* 0.  init logger 
 
     #* 1. generate gt and prediction loader
     self.split = split
-
-    
-    
 
 
     self.get_data_config(data_config_path)
@@ -274,7 +271,12 @@ class SementicEvaluator:
 
     if not self.prediction_loader.is_mapped():
       logger.info(f"ready to map ")
-      self.remapper()
+      threshold = 16 
+
+      tic = time.time()
+      self.remapper(threshold)
+      print(f'threshold = {threshold}, remapper spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
+      
       
       logger.info(f"maping done ")
       
@@ -313,7 +315,7 @@ class SementicEvaluator:
 
     tic = time.time()
     eval_res = self.evaluator.get_unknown_indices(self.save_dir) #* take long time
-    print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
+    print('get_unknown_indices spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
 
     
       

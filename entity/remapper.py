@@ -187,7 +187,11 @@ class ReMapper:
       return 
     
 
-    process_mp(self.remap,list(range(self.__len__())),threads)
+    for idx in range(self.__len__()):
+      self.remap(idx)
+      
+
+    # process_mp(self.remap,list(range(self.__len__())),threads)
     print('spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
     print("remap done ")
 
