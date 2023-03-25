@@ -181,21 +181,11 @@ class SementicEvaluator:
     self.save_dir = prediction_path
 
     self.label_loader =MultiSementicKittiGtLoader(dataset_path,self.test_sequences)
-    
-    
-    
-    
-    self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
-    if not self.prediction_loader.is_mapped():
-      #* ready to remap 
-      remapper = ReMapper(prediction=prediction_path,
+    self.remapper = ReMapper(prediction=prediction_path,
                           datacfg=data_config_path,
                           inverse=True,split=split,gt_loader = self.label_loader )
-
-      remapper()
-      print('remap done')
-      #* reset the prediciton loader 
-      self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
+    
+    self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
 
 
     assert  self.prediction_loader.__len__() == self.label_loader.__len__()
@@ -279,13 +269,19 @@ class SementicEvaluator:
   def __call__(self):
 
 
+    if not self.prediction_loader.is_mapped():
+      # tic = time.time()
+      self.remapper()
+      # print(f'remapper spend time :',time.strftime("%H:%M:%S", time.gmtime(time.time() - tic)))
+      
+      
     
     save_file = join(self.save_dir,'anomaly_eval_results.json')
     # iou_save_file = join(self.save_dir,'iou_eval_results.json')
 
-    # if exists(save_file):
-    #   logger.error(f"already evaluated!")
-    #   return
+    if exists(save_file):
+      logger.error(f"already evaluated!")
+      return
     
 
     progress = tqdm(self.label_loader)
@@ -324,7 +320,8 @@ class SementicEvaluator:
     eval_res['Acc avg'] = m_accuracy
     eval_res['IoU avg'] = m_jaccard
 
-    print('Validation set:\n Acc avg {m_accuracy:.3f}\n IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
+    print('Validation set:\n','Acc avg {m_accuracy:.3f}\n',\
+          'IoU avg {m_jaccard:.3f}'.format(m_accuracy=m_accuracy,m_jaccard=m_jaccard))
 
     class_inv_remap = self.data_cfg['learning_map_inv']
     class_strings = self.data_cfg["labels"]
