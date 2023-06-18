@@ -90,6 +90,36 @@ class iouEval:
   def get_confusion(self):
     return self.conf_matrix.copy()
 
+
+
+    
+  def get_unknown_indices_one_sample(self,label,uncertainty):
+        valid = label != 0 
+        
+        label = label[valid]
+        uncertainty = uncertainty[valid]
+        
+        
+        label[label != 5] = 0
+        label[label == 5] = 1
+        assert(len(label) == len(uncertainty))
+        
+        precision, recall, _ = precision_recall_curve(label, uncertainty)#* take long time
+        
+        aupr_score = auc(recall, precision)
+        fpr, tpr, _ = roc_curve(label, uncertainty)
+        auroc_score_1 = auc(fpr, tpr)
+
+        # print(f"AUPR: {aupr_score}; \t AUROC: {auroc_score_1}")
+
+        return  {
+          "AUPR":aupr_score,
+          "AUROC":auroc_score_1,
+        }
+
+     
+
+
   def get_unknown_indices(self,save_dir):
     self.unknown_labels = np.concatenate(self.unknown_labels)
     self.unknown_scores = np.concatenate(self.unknown_scores)

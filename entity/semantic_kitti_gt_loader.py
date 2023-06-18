@@ -63,25 +63,35 @@ class MultiSementicKittiGtLoader:
 
         
         loader_list = []
-        for sequence in sequence_list:
-            loader_list.append( SementicKittiGtLoader(root,sequence))
-        
-        
-        #* accumulate label name :
-        
         accumulated_labels = []
-        for loader in loader_list:
-            accumulated_labels += loader.get_label_list()
-
+        length_list = []
+        for sequence in sequence_list:
+            tmp_loader = SementicKittiGtLoader(root,sequence)
+            length_list.append(tmp_loader.__len__())
+            loader_list.append( tmp_loader)
+            accumulated_labels += tmp_loader.get_label_list()
+        self.length_list = length_list
+        self.loader_list = loader_list
         self.accumulated_labels = accumulated_labels
             
 
     def __len__(self):
         return len(self.accumulated_labels)
-    
 
+
+    def get_name(self,sample_idx):
+
+        for idx, length in enumerate(self.length_list):
+            if length < sample_idx:
+                sample_idx -= length
+            else:
+                target_loader = self.loader_list[idx]
+                name = target_loader.idx2name(sample_idx)
+
+        return name 
+
+    
     def __getitem__(self,idx):
-        
         return self.accumulated_labels[idx]
 
 
@@ -117,9 +127,6 @@ class SementicKittiGtLoader:
             ans.append(self.__getitem__(idx))
         return ans 
         
-
-        
-
 
     def __len__(self):
         return len(self.labels)
@@ -176,7 +183,6 @@ class SementicKittiGtLoader:
         
     def __getitem__(self,idx):
         sem_label,inst_label = self.get_label(idx)
-
 
         # return join(self.label_path,self.labels[idx])
         return sem_label

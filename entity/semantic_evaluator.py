@@ -186,7 +186,8 @@ class SementicEvaluator:
     
     
     self.prediction_loader = MultiPredictionLoader(prediction_path,self.test_sequences)
-    if not self.prediction_loader.is_mapped():
+    # if not self.prediction_loader.is_mapped():
+    if False:
       #* ready to remap 
       remapper = ReMapper(prediction=prediction_path,
                           datacfg=data_config_path,
@@ -290,27 +291,43 @@ class SementicEvaluator:
 
     progress = tqdm(self.label_loader)
     length =self.label_loader.__len__()
+    performance_each_image = {}
 
     for idx, label in enumerate(progress):
       pred,scores = self.prediction_loader[idx]
-    
+
 
       valid_index = label != 0 #* 0 is the unlabeled object 
 
       label = self.remap_lut[label]       # remap to xentropy format
       label = label[valid_index]
-
-      pred = self.remap_lut[pred]       # remap to xentropy format
+      #* not need to remap  because not remapper 
+      # pred = self.remap_lut[pred]       # remap to xentropy format
       
-      # embed()
       pred = pred[valid_index]
 
-      
       scores = scores[valid_index]
 
+
+      #!===============================
       
+      metrics = self.evaluator.get_unknown_indices_one_sample(label,scores)
+      performance_each_image[self.label_loader.get_name(idx)] = metrics
+      
+      # print(f"{}:{[ '%s:%.4f'%(k,v) for k,v in metrics.items()]}")
+
+      #!===============================
       self.evaluator.addBatch(pred, label, scores)
       progress.update(idx//length)
+
+    bb = [(k,[(kk,vv) for kk,vv in v.items()]) for k,v in performance_each_image.items()]
+    sorted_performance_each_image = sorted(bb,key = lambda x:x[1][0][1],reverse = True)
+    sorted_performance_each_image = [(x[0],*x[1]) for x in sorted_performance_each_image]
+    sorted_performance_each_image = [(x[0],*x[1],*x[2]) for x in sorted_performance_each_image]
+    sorted_performance_each_image = [(x[0],x[1],'%.2f'%(x[2]*100),x[3],'%.2f'%(x[4]*100)) for x in sorted_performance_each_image]
+    np.savetxt(join(self.save_dir,'sorted_performance_each_image.txt'),sorted_performance_each_image,fmt='%s')
+
+    
 
 
     m_accuracy = self.evaluator.getacc()
@@ -342,41 +359,41 @@ class SementicEvaluator:
         json.dump(eval_res_anomaly,f)
 
 
-class MultiSementicEvaluator:
+# class MultiSementicEvaluator:
 
 
-  def __init__(self,dataset_path,prediction_path_list,data_config_path,split='valid'):
+#   def __init__(self,dataset_path,prediction_path_list,data_config_path,split='valid'):
 
 
-    logger.info('start to init')
-    evaluator_list = []
-    for prediction in prediction_path_list:
-      logger.info(f' ready to inti {prediction}')
-      evaluator_list.append(
-        SementicEvaluator(dataset_path,prediction,data_config_path,split)
-      )
-    self.evaluator_list = evaluator_list
-    logger.info('init done ')
+#     logger.info('start to init')
+#     evaluator_list = []
+#     for prediction in prediction_path_list:
+#       logger.info(f' ready to inti {prediction}')
+#       evaluator_list.append(
+#         SementicEvaluator(dataset_path,prediction,data_config_path,split)
+#       )
+#     self.evaluator_list = evaluator_list
+#     logger.info('init done ')
 
 
-  '''
-  description: the number of evaluator 
-  param {*} self
-  return {*}
-  '''
-  def __len__(self):
-    return len(self.evaluator_list)
+#   '''
+#   description: the number of evaluator 
+#   param {*} self
+#   return {*}
+#   '''
+#   def __len__(self):
+#     return len(self.evaluator_list)
 
-  def eval_one(self,idx):
+#   def eval_one(self,idx):
 
-    self.evaluator_list[idx]()
+#     self.evaluator_list[idx]()
 
 
-  def __call__(self,thread = 512):
+#   def __call__(self,thread = 512):
 
-    # tic = time.time()
-    process_mp(self.eval_one,range(self.__len__()),num_threads=thread)
-    # print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
+#     # tic = time.time()
+#     process_mp(self.eval_one,range(self.__len__()),num_threads=thread)
+#     # print('spend  time  : ',time.strftime("%H:%M:%S",time.gmtime(time.time() - tic)))
 
 
 if __name__ == '__main__':
