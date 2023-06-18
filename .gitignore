@@ -44,3 +44,14 @@ utils
 
 build
 dist
+
+
+
+datasets
+
+semantic_kitti_api.egg-info
+
+
+__pycache__
+
+.ipynb_checkpoints
